@@ -6,8 +6,6 @@
 
 class sphere : public hittable {
   public:
-    sphere(point3 center, double radius)
-        : center{center}, radius{radius} {}
     sphere(point3 center, double radius, shared_ptr<material> mat) 
         : center{center}, radius{radius}, mat{mat} {}
 
