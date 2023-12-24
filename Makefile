@@ -1,7 +1,8 @@
 CFLAGS = -std=c++17 -Wall -g
+LDFLAGS = -fopenmp
 
 app.out: *.cc *.h
-	g++ $(CFLAGS) -o app.out *.cc $(LDFLAGS)
+	g++ $(LDFLAGS) $(CFLAGS) -o app.out *.cc $(LDFLAGS)
 
 .PHONY: test clean
 

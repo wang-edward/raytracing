@@ -7,6 +7,8 @@
 #include "hittable.h"
 #include "material.h"
 
+#include "omp.h"
+
 class camera {
   public:
     /* Public Camera Parameters Here */
@@ -30,6 +32,38 @@ class camera {
                     pixel_color += ray_color(r, max_depth, world);
                 }
                 write_color(std::cout, pixel_color, samples_per_pixel);
+            }
+        }
+
+        std::clog << "\rDone.                 \n";
+    }
+
+    void render_vec(const hittable& world) {
+        initialize();
+
+        std::vector<std::vector<vec3>> ans(image_height, std::vector<vec3>(image_width));
+
+        std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+
+        int progress = 0;
+
+        #pragma omp parallel for
+        for (int j = 0; j < image_height; ++j) {
+            for (int i = 0; i < image_width; ++i) {
+                color pixel_color(0, 0, 0);
+                for (int sample = 0; sample < samples_per_pixel; ++sample) {
+                    ray r = get_ray(i, j);
+                    pixel_color += ray_color(r, max_depth, world);
+                }
+                ans[j][i] = set_color(pixel_color, samples_per_pixel);
+                progress++;
+                std::clog << "\rProgress: " << progress++ << ' ' << std::flush;
+            }
+        }
+
+        for (auto v : ans) {
+            for (auto x : v) {
+                std::cout << x[0] << " " << x[1] << " " << x[2] << "\n";
             }
         }
 
